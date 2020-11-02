@@ -1,8 +1,14 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/********** Background color **********/
+.bg-gradient-purple{
+  background-image:linear-gradient(20deg,#5c246e 0%,#860111 100%);
 }
 
-a {
-  color: #00B7FF;
+.bg-gradient-red{
+  background-image: linear-gradient(20deg,#860111 0%,#d4af37 100%);
+  display: table;
+  width: 100%;
+}
+
+.bg-ivory{
+  background-color:ivory;
 }
