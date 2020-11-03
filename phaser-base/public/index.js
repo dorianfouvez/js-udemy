@@ -55,12 +55,15 @@ function preload(){
     // Buttons
     this.load.image("down", "./images/yellow_sliderDown.png");
     this.load.image("up", "./images/yellow_sliderUp.png");
+    //background
+    this.load.image("grass", "./images/backgroundColorGrass.png");
 }
 
 function create(){
     //console.log("create");
     let positionCameraCenterX = this.cameras.main.centerX;
     let positionCameraCenterY = this.cameras.main.centerY;
+    player = this.add.sprite(positionCameraCenterX,positionCameraCenterY,"grass");
     player = this.add.sprite(positionCameraCenterX,positionCameraCenterY,"player");
     //player.setScale(2); // permet de doubler la taille x et y du sprite player
     //player.setScale(2,1); // double la largeur (x) et x1 la hauteur (y)
