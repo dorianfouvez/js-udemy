@@ -19,6 +19,7 @@ const Navbar = (userData) => {
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="#" data-uri="/">Home</a>
+      <a class="nav-item nav-link" href="#" data-uri="/list">List</a>
       <a class="nav-item nav-link" href="#" data-uri="/logout">Logout</a>
       <a class="nav-item nav-link disabled" href="#">${userData.username}</a>
     </div>

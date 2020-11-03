@@ -3,3 +3,4 @@ node_modules
 
 # ignore the json data file
 package-lock.json
+users.json
