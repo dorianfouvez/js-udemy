@@ -36,11 +36,18 @@ let clickButtonDown = false;
 let clickButtonUp = false;
 let cursor;
 let Vkey;
+let isLeftDown = false;
+let isRightDown = false;
+let isKickDown = false;
 
 function preload(){
     //console.log("preload");
+    // Player
     this.load.image("player", "./images/player_stand.png");
     this.load.image("player_kick", "./images/player_kick.png");
+    this.load.image("player_walk1", "./images/player_walk1.png");
+    this.load.image("player_walk2", "./images/player_walk2.png");
+    // Buttons
     this.load.image("down", "./images/yellow_sliderDown.png");
     this.load.image("up", "./images/yellow_sliderUp.png");
 }
@@ -86,35 +93,70 @@ function create(){
     });
     cursor = this.input.keyboard.createCursorKeys(); // permet de récupérer les touches directionnelles
 
-    this.input.keyboard.on("keydown_B", function(){console.log("coucou")});
+    this.input.keyboard.on("keydown_B", function(){console.log("coucou")}); // agit comme un addEventListener avec callback
 
-    Vkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+    Vkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V); // Ajout un AddEventListener sur une touche mais ne lance aucune callback. (il faut faire des vérifications dans le update)
+
+    this.anims.create({/* Creation de l'animation */
+        key : "playerWalk",
+        frames : [
+            {key : "player_walk1"},
+            {key : "player_walk2"},
+        ],
+        frameRate : 8,
+        repeat : -1
+    });
+    /*this.add.sprite(150,150,"player").play("playerWalk"); // placement d'un autre sprite avec une animation dessus
+    player.anims.play("playerWalk");*/
 }
 
 function update(time, delta){
     //console.log("update"); //appel infini
     //player.setAngle(player.angle+1); // va tourner de 1° l'image à chaque update authour de son point d'origine
+    // Gestion des buttons modificateurs du peronnage
     if(clickButtonUp){
         player.setScale(player.scaleX + 0.1, player.scaleY + 0.1);
     }else if(clickButtonDown){
         player.setScale(player.scaleX - 0.1, player.scaleY - 0.1); // !!! ATTENTION une fois scale a 0, cela grandit en inversant les X et Y
     }
 
+    // Gestion des touches pour une animation/déplacements
+    // Touches directionnelles
     if(cursor.left.isDown){
-        player.x -= 5;
+        isLeftDown = true;
     }else if(cursor.right.isDown){
-        player.x += 5;
+        isRightDown = true;
     }
-    if(cursor.up.isDown){ // Rajouter un else devant ce if pour éviter les déplacements en diagonale
+    /*if(cursor.up.isDown){ // Rajouter un else devant ce if pour éviter les déplacements en diagonale
         player.y -= 5;
     }else if(cursor.down.isDown){
         player.y += 5;
+    }*/
+    if(cursor.left.isUp){
+        isLeftDown = false;
+    }
+    if(cursor.right.isUp){
+        isRightDown = false;
+    }
+    // Touche mélée
+    if(Vkey.isDown){
+        isKickDown = true;
+    }else if(Vkey.isUp){
+        isKickDown = false;
     }
 
-    if(Vkey.isDown){
+    // Gestion des animations
+    if(isKickDown){
         player.setTexture("player_kick");
-    }
-    if(Vkey.isUp){
+    }else if(isLeftDown){
+        player.x -= 5;
+        player.anims.play("playerWalk",true);
+        player.setFlip(true,false);
+    }else if(isRightDown){
+        player.x += 5;
+        player.anims.play("playerWalk",true);
+        player.setFlip(false,false);
+    }else{
         player.setTexture("player");
     }
 }
