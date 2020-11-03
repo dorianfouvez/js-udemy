@@ -48,6 +48,8 @@ const Game = () => {
     function preload(){
         // Images
 
+        // Player
+        this.load.atlas("player", PATH_IMAGES_PLAYERS+"player.png", PATH_IMAGES_PLAYERS+"playerAtlas.json");
         // Map
         this.load.image("tiles", PATH_IMAGES_TILESHEETS+"tilesheet.png");
         this.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
@@ -61,6 +63,8 @@ const Game = () => {
     function create(){
         this.tilemap = this.make.tilemap({key: "map"});
         this.tileset = this.tilemap.addTilesetImage("tilesheet","tiles");
+
+        player = this.add.sprite(200,200,"player","adventurer_stand");
 
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
@@ -77,6 +81,8 @@ const Game = () => {
             speed: 0.5
         }
         controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
+
+        generateAnimations();
     }
 
     function update(time, delta){
@@ -84,6 +90,14 @@ const Game = () => {
     }
 
     // Own function
+    function generateAnimations(){
+        game.anims.create({
+            key : "playerWalk",
+            frames : game.anims.generateFrameNames("player", {prefix: "adventurer_walk", start:1, end: 2}),
+            frameRate : 5,
+            repeat : -1
+        });
+    }
 }
 
 const singleton = () => {
