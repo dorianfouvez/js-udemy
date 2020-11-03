@@ -46,9 +46,12 @@ let isRightDown = false;
 let isKickDown = false;
 // Enemies
 let ladyBug;
+//Sounds
+let isReadyToKick = true;
 
 function preload(){
     //console.log("preload");
+    // Images
     // Player
     this.load.image("player", "./images/player_stand.png");
     this.load.image("player_kick", "./images/player_kick.png");
@@ -61,10 +64,15 @@ function preload(){
     this.load.image("grass", "./images/backgroundColorGrass.png");
     // Enemies
     this.load.image("ladyBug", "./images/ladyBug.png");
+
+    // Sounds
+    this.load.audio("kick", "./sounds/kick.ogg");
+    this.load.audio("ready", "./sounds/ready.ogg");
 }
 
 function create(){
     //console.log("create");
+    this.sound.play("ready");
     let positionCameraCenterX = this.cameras.main.centerX;
     let positionCameraCenterY = this.cameras.main.centerY;
     this.add.sprite(positionCameraCenterX,positionCameraCenterY,"grass");
@@ -190,10 +198,15 @@ function playerMovementsUpdate(){
         isKickDown = true;
     }else if(Vkey.isUp){
         isKickDown = false;
+        isReadyToKick = true;
     }
 
     // Gestion des animations
     if(isKickDown){
+        if(isReadyToKick){
+            game.sound.play("kick");
+            isReadyToKick = false;
+        }
         player.setTexture("player_kick");
     }else if(isLeftDown){
         player.x -= 5;
