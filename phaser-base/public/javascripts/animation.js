@@ -7,8 +7,7 @@ function setPolygon(){
 }
 
 function playPolygon(){
-    let openPolygon = document.querySelector(".svg-attributes-demo");
-    let animationPolygon = anime({
+    anime({
       targets: ['.svg-attributes-demo polygon', 'feTurbulence', 'feDisplacementMap'],
       points: '64 128 8.574 96 8.574 32 64 0 119.426 32 119.426 96',
       baseFrequency: 0,
