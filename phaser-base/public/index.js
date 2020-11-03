@@ -44,6 +44,8 @@ let Vkey;
 let isLeftDown = false;
 let isRightDown = false;
 let isKickDown = false;
+// Enemies
+let ladyBug;
 
 function preload(){
     //console.log("preload");
@@ -57,7 +59,8 @@ function preload(){
     this.load.image("up", "./images/yellow_sliderUp.png");
     // Background
     this.load.image("grass", "./images/backgroundColorGrass.png");
-    
+    // Enemies
+    this.load.image("ladyBug", "./images/ladyBug.png");
 }
 
 function create(){
@@ -66,6 +69,20 @@ function create(){
     let positionCameraCenterY = this.cameras.main.centerY;
     this.add.sprite(positionCameraCenterX,positionCameraCenterY,"grass");
     player = this.add.sprite(positionCameraCenterX,positionCameraCenterY,"player");
+    ladyBug = this.add.sprite(500,positionCameraCenterY+38,"ladyBug");
+    ladyBug.flipX = true;
+    let tween = this.tweens.add({ // creation de l'animation pour un enemi
+        targets: ladyBug,
+        x : 700,
+        ease : "Linear", // Linear / Cubic / Elastic / Bounce / Back
+        duration : 3000, // Higher value = slower animation
+        yoyo: true,
+        repeat : -1,
+        onStart : function (){},
+        onComplete : function (){},
+        onYoyo : function (){ladyBug.flipX = false;},
+        onRepeat : function (){ladyBug.flipX = true;},
+    });
     //player.setScale(2); // permet de doubler la taille x et y du sprite player
     //player.setScale(2,1); // double la largeur (x) et x1 la hauteur (y)
     //player.setAngle(45); // Tourne le sprite de 45° vers la droite
@@ -73,6 +90,12 @@ function create(){
     //player.setFlip(true,false); // inverse sur l'axe X
     //player.setFlip(false,true); // inverse sur l'axe Y
     //player.setFlip(true,true); // inverse sur l'axe X et Y
+
+    this.add.text(positionCameraCenterX-100, 30, "DisneyLand", {
+        fontSize: "52px",
+        color : "#FF0000",
+        fontFamily: 'Alex Brush'
+    });
 
     buttonDown = this.add.sprite(50,50,"down").setInteractive(); // setInteractive permet une interaction sur le sprite à définir par après
     buttonUp = this.add.sprite(100,50,"up").setInteractive();

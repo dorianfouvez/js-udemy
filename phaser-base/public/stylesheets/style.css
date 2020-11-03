@@ -12,3 +12,8 @@
 .bg-ivory{
   background-color:ivory;
 }
+
+/********** Text-color and/or decoration, style **********/
+.alex{
+  font-family: 'Alex Brush';
+}
