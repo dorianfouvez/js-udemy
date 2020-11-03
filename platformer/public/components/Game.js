@@ -41,6 +41,9 @@ const Game = () => {
 
     // Player
     let player;
+    // Buttons
+    let cursors;
+    let controls;
 
     function preload(){
         // Images
@@ -62,10 +65,22 @@ const Game = () => {
         this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0);
         this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
         this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0);
+
+        cursors = this.input.keyboard.createCursorKeys();
+
+        let controlConfig = {
+            camera: this.cameras.main,
+            left: cursors.left,
+            right: cursors.right,
+            up: cursors.up,
+            down: cursors.down,
+            speed: 0.5
+        }
+        controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
     }
 
     function update(time, delta){
-        //
+        controls.update(delta);
     }
 
     // Own function
