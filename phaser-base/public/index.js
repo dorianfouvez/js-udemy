@@ -31,7 +31,12 @@ let config = {
 }
 
 const game = new Phaser.Game(config);
+
+// Player
 let player;
+//Buttons
+let buttonDown;
+let buttonUp;
 let clickButtonDown = false;
 let clickButtonUp = false;
 let cursor;
@@ -64,36 +69,14 @@ function create(){
     //player.setFlip(true,false); // inverse sur l'axe X
     //player.setFlip(false,true); // inverse sur l'axe Y
     //player.setFlip(true,true); // inverse sur l'axe X et Y
-    let down = this.add.sprite(50,50,"down").setInteractive(); // setInteractive permet une interaction sur le sprite à définir par après
-    let up = this.add.sprite(100,50,"up").setInteractive();
 
-    down.on("pointerdown",function(){ // agit comme un addEventListener et défini une action sur le sprite
-        console.log("pointer down");
-        clickButtonDown = true;
-    }); 
-    down.on("pointerup",function(){
-        console.log("pointer up");
-        clickButtonDown = false;
-    });
-    down.on("pointerout",function(){
-        console.log("pointer out");
-        clickButtonDown = false;
-    });
-    up.on("pointerdown",function(){ // agit comme un addEventListener et défini une action sur le sprite
-        console.log("pointer down");
-        clickButtonUp = true;
-    }); 
-    up.on("pointerup",function(){
-        console.log("pointer up");
-        clickButtonUp = false;
-    });
-    up.on("pointerout",function(){
-        console.log("pointer out");
-        clickButtonUp = false;
-    });
+    buttonDown = this.add.sprite(50,50,"down").setInteractive(); // setInteractive permet une interaction sur le sprite à définir par après
+    buttonUp = this.add.sprite(100,50,"up").setInteractive();
+    playerSizeModification();
+    
     cursor = this.input.keyboard.createCursorKeys(); // permet de récupérer les touches directionnelles
 
-    this.input.keyboard.on("keydown_B", function(){console.log("coucou")}); // agit comme un addEventListener avec callback
+    //this.input.keyboard.on("keydown_B", function(){console.log("coucou")}); // agit comme un addEventListener avec callback
 
     Vkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V); // Ajout un AddEventListener sur une touche mais ne lance aucune callback. (il faut faire des vérifications dans le update)
 
@@ -113,13 +96,50 @@ function create(){
 function update(time, delta){
     //console.log("update"); //appel infini
     //player.setAngle(player.angle+1); // va tourner de 1° l'image à chaque update authour de son point d'origine
+    playerSizeModificationUpdate();
+
+    playerMovementsUpdate();
+}
+
+// Own function
+function playerSizeModification(){
+
+    buttonDown.on("pointerdown",function(){ // agit comme un addEventListener et défini une action sur le sprite
+        console.log("pointer down");
+        clickButtonDown = true;
+    }); 
+    buttonDown.on("pointerup",function(){
+        console.log("pointer up");
+        clickButtonDown = false;
+    });
+    buttonDown.on("pointerout",function(){
+        console.log("pointer out");
+        clickButtonDown = false;
+    });
+    buttonUp.on("pointerdown",function(){ // agit comme un addEventListener et défini une action sur le sprite
+        console.log("pointer down");
+        clickButtonUp = true;
+    }); 
+    buttonUp.on("pointerup",function(){
+        console.log("pointer up");
+        clickButtonUp = false;
+    });
+    buttonUp.on("pointerout",function(){
+        console.log("pointer out");
+        clickButtonUp = false;
+    });
+}
+
+function playerSizeModificationUpdate(){
     // Gestion des buttons modificateurs du peronnage
     if(clickButtonUp){
         player.setScale(player.scaleX + 0.1, player.scaleY + 0.1);
     }else if(clickButtonDown){
         player.setScale(player.scaleX - 0.1, player.scaleY - 0.1); // !!! ATTENTION une fois scale a 0, cela grandit en inversant les X et Y
     }
+}
 
+function playerMovementsUpdate(){
     // Gestion des touches pour une animation/déplacements
     // Touches directionnelles
     if(cursor.left.isDown){
