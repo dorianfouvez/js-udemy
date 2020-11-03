@@ -64,6 +64,8 @@ function preload(){
     this.load.image("grass", "./images/backgroundColorGrass.png");
     // Enemies
     this.load.image("ladyBug", "./images/ladyBug.png");
+    // SpriteSheets
+    this.load.spritesheet("zombieSPS", "./images/zombie_tilesheet.png", {frameWidth: 80, frameHeight: 110});
 
     // Sounds
     this.load.audio("kick", "./sounds/kick.ogg");
@@ -115,17 +117,9 @@ function create(){
 
     Vkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V); // Ajout un AddEventListener sur une touche mais ne lance aucune callback. (il faut faire des vérifications dans le update)
 
-    this.anims.create({/* Creation de l'animation */
-        key : "playerWalk",
-        frames : [
-            {key : "player_walk1"},
-            {key : "player_walk2"},
-        ],
-        frameRate : 8,
-        repeat : -1
-    });
-    /*this.add.sprite(150,150,"player").play("playerWalk"); // placement d'un autre sprite avec une animation dessus
-    player.anims.play("playerWalk");*/
+    generateAnimations();
+
+    this.add.sprite(300,300).play("zombieWalk");
 }
 
 function update(time, delta){
@@ -162,6 +156,46 @@ function playerSizeModification(){
     buttonUp.on("pointerout",function(){
         console.log("pointer out");
         clickButtonUp = false;
+    });
+}
+
+function generateAnimations(){
+    game.anims.create({/* Creation de l'animation */
+        key : "playerWalk",
+        frames : [
+            {key : "player_walk1"},
+            {key : "player_walk2"},
+        ],
+        frameRate : 8,
+        repeat : -1
+    });
+    /*this.add.sprite(150,150,"player").play("playerWalk"); // placement d'un autre sprite avec une animation dessus
+    player.anims.play("playerWalk");*/
+
+    game.anims.create({
+        key: "zombieWalk",
+        frames: game.anims.generateFrameNumbers("zombieSPS", {start:9,end:10}),
+        frameRate: 8,
+        repeat: -1
+    });
+
+    game.anims.create({
+        key: "zombieStand",
+        frames: [
+            {key :"zombieSPS", frame: 23}
+        ],
+        frameRate: 8,
+        repeat: -1
+    });
+
+    game.anims.create({
+        key: "zombieIdle",
+        frames: [
+            {key: "zombieSPS", frame: 0},
+            {key: "zombieSPS", frame: 23}
+        ],
+        frameRate: 8,
+        repeat: -1
     });
 }
 
