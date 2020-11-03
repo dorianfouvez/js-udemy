@@ -5,6 +5,7 @@ const PATH_IMAGES_BUTTONS = PATH_IMAGES + "buttons/";
 const PATH_IMAGES_ENEMIES = PATH_IMAGES + "enemies/";
 const PATH_IMAGES_PLATEFORMS = PATH_IMAGES + "plateforms/";
 const PATH_IMAGES_PLAYERS = PATH_IMAGES + "players/";
+const PATH_IMAGES_TILESHEETS = PATH_IMAGES + "tilesheets/";
 const PATH_SOUNDS = "../sounds/";
 const PATH_SOUNDS_MISCS = PATH_SOUNDS + "miscs/";
 const PATH_SOUNDS_PLAYERS = PATH_SOUNDS + "players/";
@@ -22,6 +23,7 @@ const Game = () => {
         type : Phaser.AUTO,
         /*parent : page,*/
         /*parent : 'page',*/
+        /* background: "#CCCCFF" */
         scene : {
             preload : preload,
             create : create,
@@ -74,6 +76,8 @@ const Game = () => {
         // SpriteSheets
         this.load.spritesheet("zombieSPS", PATH_IMAGES_ENEMIES+"zombie_tilesheet.png", {frameWidth: 80, frameHeight: 110});
 
+
+        
         // Sounds
         this.load.audio("kick", PATH_SOUNDS_PLAYERS+"kick.ogg");
         this.load.audio("ready", PATH_SOUNDS_MISCS + "ready.ogg");
