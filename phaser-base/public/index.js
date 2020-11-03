@@ -27,6 +27,12 @@ let config = {
         preload : preload,
         create : create,
         update : update
+    },
+    physics: {
+        default: "arcade",
+        arcade: {
+            gravity: {y: 500}
+        }
     }
 }
 
@@ -60,6 +66,8 @@ function preload(){
     // Buttons
     this.load.image("down", "./images/yellow_sliderDown.png");
     this.load.image("up", "./images/yellow_sliderUp.png");
+    // Grounds
+    this.load.image("grassGround", "./images/sol.png");
     // Background
     this.load.image("grass", "./images/backgroundColorGrass.png");
     // Enemies
@@ -78,7 +86,18 @@ function create(){
     let positionCameraCenterX = this.cameras.main.centerX;
     let positionCameraCenterY = this.cameras.main.centerY;
     this.add.sprite(positionCameraCenterX,positionCameraCenterY,"grass");
-    player = this.add.sprite(positionCameraCenterX,positionCameraCenterY,"player");
+    player = this.physics.add.sprite(positionCameraCenterX,positionCameraCenterY,"player");
+
+    let platforms = this.physics.add.staticGroup(); // créer un group de plateformes
+
+    let ground1 = this.add.sprite(115, 550, "grassGround"); // créer un sol traversable
+    let ground2 = this.add.sprite(positionCameraCenterX, 550, "grassGround");
+
+    platforms.add(ground1); // ajoute un sol au groupe de plateforme
+    platforms.add(ground2);
+
+    this.physics.add.collider(platforms, player); // créer une collistion et donc l'infranchisabilitée des platefromes par le player
+
     ladyBug = this.add.sprite(500,positionCameraCenterY+38,"ladyBug");
     ladyBug.flipX = true;
     let tween = this.tweens.add({ // creation de l'animation pour un enemi
