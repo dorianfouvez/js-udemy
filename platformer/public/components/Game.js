@@ -39,20 +39,28 @@ const Game = () => {
 
     const game = new Phaser.Game(config);
 
-    // Player
-    let player;
     // Buttons
-    let cursors;
     let controls;
 
+    let gameSettings = {
+        scene: null,
+        world: null,
+        player: null,
+        cursor: null
+    }
+
     function preload(){
+        // Settings
+        gameSettings.scene = this;
+
+
         // Images
 
         // Player
-        this.load.atlas("player", PATH_IMAGES_PLAYERS+"player.png", PATH_IMAGES_PLAYERS+"playerAtlas.json");
+        gameSettings.scene.load.atlas("player", PATH_IMAGES_PLAYERS+"player.png", PATH_IMAGES_PLAYERS+"playerAtlas.json");
         // Map
-        this.load.image("tiles", PATH_IMAGES_TILESHEETS+"tilesheet.png");
-        this.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
+        gameSettings.scene.load.image("tiles", PATH_IMAGES_TILESHEETS+"tilesheet.png");
+        gameSettings.scene.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
 
 
 
@@ -61,42 +69,69 @@ const Game = () => {
     }
 
     function create(){
-        this.tilemap = this.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("tilesheet","tiles");
+        initWorld();
 
-        player = this.add.sprite(200,200,"player","adventurer_stand");
+        initPlayer();
 
-        this.downLayer = this.tilemap.createStaticLayer("bottom",this.tileset,0,0);
-        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
-        this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0);
+        generateAnimations();
+        //gameSettings.player.play("playerWalk");
 
-        cursors = this.input.keyboard.createCursorKeys();
+        manageColliders();
 
-        let controlConfig = {
-            camera: this.cameras.main,
+        gameSettings.cursor = gameSettings.scene.input.keyboard.createCursorKeys();
+
+        /*let controlConfig = {
+            camera: gameSettings.scene.cameras.main,
             left: cursors.left,
             right: cursors.right,
             up: cursors.up,
             down: cursors.down,
             speed: 0.5
         }
-        controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
+        controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);*/
 
-        generateAnimations();
     }
 
     function update(time, delta){
-        controls.update(delta);
+        //controls.update(delta);
+        playerMovementsUpdate();
     }
 
     // Own function
+    function initWorld(){
+        // Image of Map
+        gameSettings.scene.tilemap = gameSettings.scene.make.tilemap({key: "map"});
+        gameSettings.scene.tileset = gameSettings.scene.tilemap.addTilesetImage("tilesheet","tiles");
+
+        // Set all levels of the map
+        gameSettings.scene.downLayer = gameSettings.scene.tilemap.createStaticLayer("bottom",gameSettings.scene.tileset,0,0);
+        gameSettings.scene.worldLayer = gameSettings.scene.tilemap.createStaticLayer("world",gameSettings.scene.tileset,0,0);
+        gameSettings.scene.topLayer = gameSettings.scene.tilemap.createStaticLayer("top",gameSettings.scene.tileset,0,0);
+    }
+
+    function initPlayer(){
+        gameSettings.player = gameSettings.scene.physics.add.sprite(200,200,"player","adventurer_stand");
+    }
+
     function generateAnimations(){
-        game.anims.create({
+        gameSettings.scene.anims.create({
             key : "playerWalk",
-            frames : game.anims.generateFrameNames("player", {prefix: "adventurer_walk", start:1, end: 2}),
+            frames : gameSettings.scene.anims.generateFrameNames("player", {prefix: "adventurer_walk", start:1, end: 2}),
             frameRate : 5,
             repeat : -1
         });
+    }
+
+    function manageColliders(){
+        // Colliders
+        gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
+        gameSettings.scene.physics.add.collider(gameSettings.player, gameSettings.scene.worldLayer);
+    }
+
+    function playerMovementsUpdate(){
+        if(gameSettings.cursor.left.isDown) gameSettings.player.setVelocityX(-200);
+        else if(gameSettings.cursor.right.isDown) gameSettings.player.setVelocityX(200);
+        else /*if(gameSettings.cursor.left.isUp)*/ gameSettings.player.setVelocityX(0);
     }
 }
 
