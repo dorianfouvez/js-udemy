@@ -98,12 +98,29 @@ const Game = () => {
 
     function update(time, delta){
         //controls.update(delta);
+        fitToScreen()
         playerMovementsUpdate();
     }
 
 
 
-    // Own function
+    // Own function 
+    function fitToScreen(){
+        let canvas = document.querySelector("canvas");
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let windowRate = windowWidth / windowHeight;
+        let configRate = config.width / config.height;
+
+        if(windowRate < configRate){
+            canvas.style.width = windowWidth + "px";
+            canvas.style.height = (windowWidth / configRate) + "px";
+        }else{
+            canvas.style.width = (windowWidth * configRate) + "px";
+            canvas.style.height = windowHeight + "px";
+        }
+    }
+
     function initWorld(){
         // Image of Map
         gameSettings.scene.tilemap = gameSettings.scene.make.tilemap({key: "map"});
