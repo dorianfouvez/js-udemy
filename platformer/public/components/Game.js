@@ -50,6 +50,9 @@ const Game = () => {
             itSelf: null,
             isJumping: false
         },
+        enemies: {
+            zombie: null,
+        },
         cursor: null
     }
 
@@ -65,6 +68,8 @@ const Game = () => {
         // Map
         gameSettings.scene.load.image("tiles", PATH_IMAGES_TILESHEETS+"tilesheet.png");
         gameSettings.scene.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
+        // Enemies
+        gameSettings.scene.load.atlas("zombie", PATH_IMAGES_ENEMIES+"zombie.png", PATH_IMAGES_ENEMIES+"zombieAtlas.json");
         // Miscs
         gameSettings.scene.load.image("spark", PATH_IMAGES_MISCS+"particle.png");
         gameSettings.scene.load.image("panel", PATH_IMAGES_MISCS+"yellow_panel.png");
@@ -80,6 +85,7 @@ const Game = () => {
         initWorld();
 
         initPlayer();
+        initEnemies();
 
         generateAnimations();
         //gameSettings.player.play("playerWalk"); // gameSettings.player.anims.play("playerWalk");
@@ -166,6 +172,10 @@ const Game = () => {
         gameSettings.player.isAlive = true;
     }
 
+    function initEnemies(){
+        gameSettings.enemies.zombie = gameSettings.scene.physics.add.sprite(400, 400, "zombie", "zombie_stand");
+    }
+
     function generateAnimations(){
         gameSettings.scene.anims.create({
             key : "playerWalk",
@@ -190,8 +200,11 @@ const Game = () => {
         gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
         gameSettings.scene.physics.add.collider(gameSettings.player.itSelf, gameSettings.scene.worldLayer);
 
+        gameSettings.scene.physics.add.collider(gameSettings.enemies.zombie, gameSettings.scene.worldLayer);
+
         // OverLaps
         gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.scene.overlapLayer);
+        gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.enemies.zombie, attack);
         gameSettings.scene.overlapLayer.setTileIndexCallback((70+1), killPlayer, gameSettings.scene);
     }
 
@@ -282,6 +295,14 @@ const Game = () => {
 
         // Remove the item
         gameSettings.scene.overlapLayer.removeTileAt(tile.x, tile.y).destroy(); // Utilité du destroy() ????
+    }
+
+    function attack(){
+        if(gameSettings.player.isJumping){
+            gameSettings.enemies.zombie.destroy();
+        }else{
+            killPlayer();
+        }
     }
 
     function killPlayer(){
