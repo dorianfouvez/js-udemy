@@ -45,7 +45,10 @@ const Game = () => {
     let gameSettings = {
         scene: null,
         world: null,
-        player: null,
+        player: {
+            itSelf: null,
+            isJumping: false
+        },
         cursor: null
     }
 
@@ -74,7 +77,7 @@ const Game = () => {
         initPlayer();
 
         generateAnimations();
-        //gameSettings.player.play("playerWalk");
+        //gameSettings.player.play("playerWalk"); // gameSettings.player.anims.play("playerWalk");
 
         manageColliders();
         manageCamera()
@@ -116,8 +119,8 @@ const Game = () => {
     }
 
     function initPlayer(){
-        gameSettings.player = gameSettings.scene.physics.add.sprite(200,200,"player","adventurer_stand");
-        gameSettings.player.setCollideWorldBounds(true);
+        gameSettings.player.itSelf = gameSettings.scene.physics.add.sprite(200,200,"player","adventurer_stand");
+        gameSettings.player.itSelf.setCollideWorldBounds(true);
     }
 
     function generateAnimations(){
@@ -127,23 +130,64 @@ const Game = () => {
             frameRate : 5,
             repeat : -1
         });
+
+        gameSettings.scene.anims.create({
+            key : "playerIdle",
+            frames : [
+                {key: "player", frame: "adventurer_stand"},
+                {key: "player", frame: "adventurer_idle"}
+            ],
+            frameRate : 2,
+            repeat : -1
+        });
     }
 
     function manageColliders(){
         // Colliders
         gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
-        gameSettings.scene.physics.add.collider(gameSettings.player, gameSettings.scene.worldLayer);
+        gameSettings.scene.physics.add.collider(gameSettings.player.itSelf, gameSettings.scene.worldLayer);
     }
 
     function manageCamera(){
-        gameSettings.scene.cameras.main.startFollow(gameSettings.player);
+        gameSettings.scene.cameras.main.startFollow(gameSettings.player.itSelf);
         gameSettings.scene.cameras.main.setBounds(0,0,gameSettings.scene.tilemap.widthInPixels,gameSettings.scene.tilemap.heigthInPixels);
     }
 
     function playerMovementsUpdate(){
-        if(gameSettings.cursor.left.isDown) gameSettings.player.setVelocityX(-200);
-        else if(gameSettings.cursor.right.isDown) gameSettings.player.setVelocityX(200);
-        else /*if(gameSettings.cursor.left.isUp)*/ gameSettings.player.setVelocityX(0);
+        // Movements
+        if(gameSettings.cursor.left.isDown){
+            gameSettings.player.itSelf.setVelocityX(-200);
+            gameSettings.player.itSelf.flipX = true;
+        }else if(gameSettings.cursor.right.isDown){
+            gameSettings.player.itSelf.setVelocityX(200);
+            gameSettings.player.itSelf.flipX = false;
+        }else /*if(gameSettings.cursor.left.isUp)*/{
+            gameSettings.player.itSelf.setVelocityX(0);
+        }
+
+        if(gameSettings.cursor.up.isDown && gameSettings.player.itSelf.body.onFloor()){
+            gameSettings.player.itSelf.setVelocityY(-300);
+        }
+
+
+        // Run Animations
+        if(gameSettings.player.itSelf.body.onFloor()){
+            gameSettings.player.isJumping = false;
+        }else{
+            gameSettings.player.isJumping = true;
+        }
+
+        if(gameSettings.player.isJumping){
+            gameSettings.player.itSelf.setTexture("player", "adventurer_jump");
+        }else{
+            if(gameSettings.cursor.left.isDown){
+                gameSettings.player.itSelf.play("playerWalk",true);
+            }else if(gameSettings.cursor.right.isDown){
+                gameSettings.player.itSelf.play("playerWalk",true);
+            }else{
+                gameSettings.player.itSelf.play("playerIdle",true);
+            }
+        }
     }
 }
 
