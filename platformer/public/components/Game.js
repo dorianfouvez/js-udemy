@@ -3,6 +3,7 @@ const PATH_IMAGES = "../images/";
 const PATH_IMAGES_BACKGROUNDS = PATH_IMAGES + "backgrounds/";
 const PATH_IMAGES_BUTTONS = PATH_IMAGES + "buttons/";
 const PATH_IMAGES_ENEMIES = PATH_IMAGES + "enemies/";
+const PATH_IMAGES_MISCS = PATH_IMAGES + "miscs/";
 const PATH_IMAGES_PLATEFORMS = PATH_IMAGES + "plateforms/";
 const PATH_IMAGES_PLAYERS = PATH_IMAGES + "players/";
 const PATH_IMAGES_TILESHEETS = PATH_IMAGES + "tilesheets/";
@@ -64,6 +65,8 @@ const Game = () => {
         // Map
         gameSettings.scene.load.image("tiles", PATH_IMAGES_TILESHEETS+"tilesheet.png");
         gameSettings.scene.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
+        // Miscs
+        gameSettings.scene.load.image("spark", PATH_IMAGES_MISCS+"particle.png");
 
 
 
@@ -229,7 +232,29 @@ console.log(gameSettings.scene.scoreText);
     }
 
     function collectGemme(player, tile){
-        //console.log(tile.properties);
+        
+        // Generate sparkles
+        // tile.getCenterX(), tile.getCenterY();
+        let sparkles = gameSettings.scene.add.particles("spark");
+        // Version 1
+        /*let emitter = sparkles.createEmitter();
+        emitter.setPosition(tile.getCenterX(), tile.getCenterY());
+        emitter.setScale(0.1);
+        emitter.setSpeed(200);
+        emitter.setBlendMode(Phaser.BlendModes.ADD);
+        gameSettings.scene.time.delayedCall(300, function () {sparkles.destroy()});*/
+        // Version 2
+        let particlesConfig = {
+            x: tile.getCenterX(),
+            y: tile.getCenterY(),
+            speed: 200,
+            scale: {start: 0.1, end: 0.1},
+            lifeSpan: {min: 200, max: 400},
+            blendMode: "ADD",
+            /*angle: {min: 180, max: 360}*/
+        }
+        sparkles.createEmitter(particlesConfig);
+        gameSettings.scene.time.delayedCall(300, function () {sparkles.destroy()});
 
         // Check which item is
         if(tile.properties.item === "blueFragment"){
@@ -237,6 +262,7 @@ console.log(gameSettings.scene.scoreText);
         }else if(tile.properties.item === "yellowFragment"){
             gameSettings.scene.score += 10;
         }
+
         // Show The Score
         //console.log(gameSettings.scene.score);
         gameSettings.scene.scoreText.setText("Score : " + gameSettings.scene.score + " ");
