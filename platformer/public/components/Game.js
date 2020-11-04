@@ -67,11 +67,13 @@ const Game = () => {
         gameSettings.scene.load.tilemapTiledJSON("map", PATH_IMAGES_BACKGROUNDS + "PremiereCarte.json");
         // Miscs
         gameSettings.scene.load.image("spark", PATH_IMAGES_MISCS+"particle.png");
+        gameSettings.scene.load.image("panel", PATH_IMAGES_MISCS+"yellow_panel.png");
+        gameSettings.scene.load.image("vBoxButton", PATH_IMAGES_MISCS+"yellow_boxCheckmark.png");
 
 
 
         // Sounds
-        //this.load.audio("kick", PATH_SOUNDS_PLAYERS+"kick.ogg");
+        this.load.audio("collectGem", PATH_SOUNDS_MISCS+"gemmeSound.ogg");
     }
 
     function create(){
@@ -96,7 +98,6 @@ const Game = () => {
             speed: 0.5
         }
         controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);*/
-console.log(gameSettings.scene.scoreText);
     }
 
     function update(time, delta){
@@ -150,6 +151,9 @@ console.log(gameSettings.scene.scoreText);
         });
         gameSettings.scene.scoreText.setScrollFactor(0);
 
+        // Init Game Over
+        gameSettings.scene.gameOver = false;
+
         // Set Items
         gameSettings.scene.overlapLayer.setTileIndexCallback((35+1), collectGemme, gameSettings.scene); // id 35 = blueFragment
         gameSettings.scene.overlapLayer.setTileIndexCallback((36+1), collectGemme, gameSettings.scene);
@@ -159,6 +163,7 @@ console.log(gameSettings.scene.scoreText);
         gameSettings.player.itSelf = gameSettings.scene.physics.add.sprite(gameSettings.scene.spawn.x, gameSettings.scene.spawn.y, "player", "adventurer_stand");
         gameSettings.player.itSelf.setCollideWorldBounds(true);
         gameSettings.player.itSelf.setOrigin(0.5,1);
+        gameSettings.player.isAlive = true;
     }
 
     function generateAnimations(){
@@ -187,6 +192,7 @@ console.log(gameSettings.scene.scoreText);
 
         // OverLaps
         gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.scene.overlapLayer);
+        gameSettings.scene.overlapLayer.setTileIndexCallback((70+1), killPlayer, gameSettings.scene);
     }
 
     function manageCamera(){
@@ -195,44 +201,51 @@ console.log(gameSettings.scene.scoreText);
     }
 
     function playerMovementsUpdate(){
-        // Movements
-        if(gameSettings.cursor.left.isDown){
-            gameSettings.player.itSelf.setVelocityX(-200);
-            gameSettings.player.itSelf.flipX = true;
-        }else if(gameSettings.cursor.right.isDown){
-            gameSettings.player.itSelf.setVelocityX(200);
-            gameSettings.player.itSelf.flipX = false;
-        }else /*if(gameSettings.cursor.left.isUp)*/{
-            gameSettings.player.itSelf.setVelocityX(0);
-        }
-
-        if(gameSettings.cursor.up.isDown && gameSettings.player.itSelf.body.onFloor()){
-            gameSettings.player.itSelf.setVelocityY(-365);
-        }
-
-
-        // Run Animations
-        if(gameSettings.player.itSelf.body.onFloor()){
-            gameSettings.player.isJumping = false;
-        }else{
-            gameSettings.player.isJumping = true;
-        }
-
-        if(gameSettings.player.isJumping){
-            gameSettings.player.itSelf.setTexture("player", "adventurer_jump");
-        }else{
+        if(gameSettings.player.isAlive){
+            // Movements
             if(gameSettings.cursor.left.isDown){
-                gameSettings.player.itSelf.play("playerWalk",true);
+                gameSettings.player.itSelf.setVelocityX(-200);
+                gameSettings.player.itSelf.flipX = true;
             }else if(gameSettings.cursor.right.isDown){
-                gameSettings.player.itSelf.play("playerWalk",true);
-            }else{
-                gameSettings.player.itSelf.play("playerIdle",true);
+                gameSettings.player.itSelf.setVelocityX(200);
+                gameSettings.player.itSelf.flipX = false;
+            }else /*if(gameSettings.cursor.left.isUp)*/{
+                gameSettings.player.itSelf.setVelocityX(0);
             }
+    
+            if(gameSettings.cursor.up.isDown && gameSettings.player.itSelf.body.onFloor()){
+                gameSettings.player.itSelf.setVelocityY(-365);
+            }
+    
+    
+            // Run Animations
+            if(gameSettings.player.itSelf.body.onFloor()){
+                gameSettings.player.isJumping = false;
+            }else{
+                gameSettings.player.isJumping = true;
+            }
+    
+            if(gameSettings.player.isJumping){
+                gameSettings.player.itSelf.setTexture("player", "adventurer_jump");
+            }else{
+                if(gameSettings.cursor.left.isDown){
+                    gameSettings.player.itSelf.play("playerWalk",true);
+                }else if(gameSettings.cursor.right.isDown){
+                    gameSettings.player.itSelf.play("playerWalk",true);
+                }else{
+                    gameSettings.player.itSelf.play("playerIdle",true);
+                }
+            }
+        }else{
+            gameSettings.player.itSelf.setVelocityX(0);
+            gameSettings.player.itSelf.setTexture("player", "adventurer_hurt");
         }
     }
 
     function collectGemme(player, tile){
-        
+        // Play Sound
+        gameSettings.scene.sound.play("collectGem");
+
         // Generate sparkles
         // tile.getCenterX(), tile.getCenterY();
         let sparkles = gameSettings.scene.add.particles("spark");
@@ -269,6 +282,24 @@ console.log(gameSettings.scene.scoreText);
 
         // Remove the item
         gameSettings.scene.overlapLayer.removeTileAt(tile.x, tile.y).destroy(); // Utilité du destroy() ????
+    }
+
+    function killPlayer(){
+        if(!gameSettings.scene.gameOver){
+            gameSettings.player.isAlive = false;
+            gameSettings.scene.gameOver = true;
+            //gameSettings.player.itSelf.setTexture("player", "adventurer_hurt");
+            gameSettings.scene.add.sprite(gameSettings.scene.cameras.main.midPoint.x, gameSettings.scene.cameras.main.midPoint.y, "panel").setScale(3,1.5);
+            let restartButton = gameSettings.scene.add.sprite(gameSettings.scene.cameras.main.midPoint.x, gameSettings.scene.cameras.main.midPoint.y+50, "vBoxButton").setInteractive();
+            restartButton.on("pointerup", function(){
+                gameSettings.scene.scene.restart();
+            });
+            gameSettings.scene.scoreText = gameSettings.scene.add.text(gameSettings.scene.cameras.main.midPoint.x-80, gameSettings.scene.cameras.main.midPoint.y-50, "Game Over\nRecommencer ?", {
+                fontSize: "32px",
+                color : "#FFFFFF",
+                fontFamily: 'Alex Brush'
+            });
+        }
     }
 }
 
