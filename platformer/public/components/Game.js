@@ -77,6 +77,7 @@ const Game = () => {
         //gameSettings.player.play("playerWalk");
 
         manageColliders();
+        manageCamera()
 
         gameSettings.cursor = gameSettings.scene.input.keyboard.createCursorKeys();
 
@@ -97,6 +98,8 @@ const Game = () => {
         playerMovementsUpdate();
     }
 
+
+
     // Own function
     function initWorld(){
         // Image of Map
@@ -107,10 +110,14 @@ const Game = () => {
         gameSettings.scene.downLayer = gameSettings.scene.tilemap.createStaticLayer("bottom",gameSettings.scene.tileset,0,0);
         gameSettings.scene.worldLayer = gameSettings.scene.tilemap.createStaticLayer("world",gameSettings.scene.tileset,0,0);
         gameSettings.scene.topLayer = gameSettings.scene.tilemap.createStaticLayer("top",gameSettings.scene.tileset,0,0);
+
+        // Set Borders of the map
+        gameSettings.scene.physics.world.setBounds(0,0,gameSettings.scene.tilemap.widthInPixels,gameSettings.scene.tilemap.heigthInPixels);
     }
 
     function initPlayer(){
         gameSettings.player = gameSettings.scene.physics.add.sprite(200,200,"player","adventurer_stand");
+        gameSettings.player.setCollideWorldBounds(true);
     }
 
     function generateAnimations(){
@@ -126,6 +133,11 @@ const Game = () => {
         // Colliders
         gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
         gameSettings.scene.physics.add.collider(gameSettings.player, gameSettings.scene.worldLayer);
+    }
+
+    function manageCamera(){
+        gameSettings.scene.cameras.main.startFollow(gameSettings.player);
+        gameSettings.scene.cameras.main.setBounds(0,0,gameSettings.scene.tilemap.widthInPixels,gameSettings.scene.tilemap.heigthInPixels);
     }
 
     function playerMovementsUpdate(){
