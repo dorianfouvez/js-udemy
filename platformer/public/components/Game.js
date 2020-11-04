@@ -130,9 +130,14 @@ const Game = () => {
         gameSettings.scene.downLayer = gameSettings.scene.tilemap.createStaticLayer("bottom",gameSettings.scene.tileset,0,0);
         gameSettings.scene.worldLayer = gameSettings.scene.tilemap.createStaticLayer("world",gameSettings.scene.tileset,0,0);
         gameSettings.scene.topLayer = gameSettings.scene.tilemap.createStaticLayer("top",gameSettings.scene.tileset,0,0);
+        gameSettings.scene.overlapLayer = gameSettings.scene.tilemap.createDynamicLayer("overlap",gameSettings.scene.tileset,0,0);
 
         // Set Borders of the map
         gameSettings.scene.physics.world.setBounds(0,0,gameSettings.scene.tilemap.widthInPixels,gameSettings.scene.tilemap.heigthInPixels);
+
+        // Set Items
+        gameSettings.scene.overlapLayer.setTileIndexCallback((35+1), collectGemme, gameSettings.scene); // id 35 = blueFragment
+        gameSettings.scene.overlapLayer.setTileIndexCallback((36+1), collectGemme, gameSettings.scene);
     }
 
     function initPlayer(){
@@ -163,6 +168,9 @@ const Game = () => {
         // Colliders
         gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
         gameSettings.scene.physics.add.collider(gameSettings.player.itSelf, gameSettings.scene.worldLayer);
+
+        // OverLaps
+        gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.scene.overlapLayer);
     }
 
     function manageCamera(){
@@ -183,7 +191,7 @@ const Game = () => {
         }
 
         if(gameSettings.cursor.up.isDown && gameSettings.player.itSelf.body.onFloor()){
-            gameSettings.player.itSelf.setVelocityY(-300);
+            gameSettings.player.itSelf.setVelocityY(-365);
         }
 
 
@@ -205,6 +213,11 @@ const Game = () => {
                 gameSettings.player.itSelf.play("playerIdle",true);
             }
         }
+    }
+
+    function collectGemme(player, tile){
+        //console.log(tile.properties);
+        gameSettings.scene.overlapLayer.removeTileAt(tile.x, tile.y).destroy(); // Utilité du destroy() ????
     }
 }
 
