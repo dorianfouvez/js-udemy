@@ -51,7 +51,7 @@ const Game = () => {
             isJumping: false
         },
         enemies: {
-            zombie: null,
+            zombie: {},
         },
         cursor: null
     }
@@ -89,6 +89,7 @@ const Game = () => {
 
         generateAnimations();
         //gameSettings.player.play("playerWalk"); // gameSettings.player.anims.play("playerWalk");
+        gameSettings.enemies.zombie.himSelf.anims.play("zombieWalk");
 
         manageColliders();
         manageCamera()
@@ -173,10 +174,13 @@ const Game = () => {
     }
 
     function initEnemies(){
-        gameSettings.enemies.zombie = gameSettings.scene.physics.add.sprite(400, 400, "zombie", "zombie_stand");
+        gameSettings.enemies.zombie.spawn = gameSettings.scene.tilemap.findObject("Objects", obj => obj.name === "zombie1Spawn");
+        gameSettings.enemies.zombie.himSelf = gameSettings.scene.physics.add.sprite(gameSettings.enemies.zombie.spawn.x, gameSettings.enemies.zombie.spawn.y, "zombie", "zombie_stand");
+        gameSettings.enemies.zombie.himSelf.setOrigin(0.5,1);
     }
 
     function generateAnimations(){
+        // Player
         gameSettings.scene.anims.create({
             key : "playerWalk",
             frames : gameSettings.scene.anims.generateFrameNames("player", {prefix: "adventurer_walk", start:1, end: 2}),
@@ -193,6 +197,27 @@ const Game = () => {
             frameRate : 2,
             repeat : -1
         });
+
+        //Zombie
+        gameSettings.scene.tweens.add({ // creation de l'animation pour un enemi
+            targets: gameSettings.enemies.zombie.himSelf,
+            x : gameSettings.enemies.zombie.spawn.x + 700,
+            ease : "Linear", // Linear / Cubic / Elastic / Bounce / Back
+            duration : 3000, // Higher value = slower animation
+            yoyo: true,
+            repeat : -1,
+            onStart : function (){},
+            onComplete : function (){},
+            onYoyo : function (){gameSettings.enemies.zombie.himSelf.flipX = !gameSettings.enemies.zombie.himSelf.flipX;},
+            onRepeat : function (){gameSettings.enemies.zombie.himSelf.flipX = !gameSettings.enemies.zombie.himSelf.flipX;},
+        });
+
+        gameSettings.scene.anims.create({
+            key : "zombieWalk",
+            frames : gameSettings.scene.anims.generateFrameNames("zombie", {prefix: "zombie_walk", start:1, end: 2}),
+            frameRate : 5,
+            repeat : -1
+        });
     }
 
     function manageColliders(){
@@ -200,11 +225,11 @@ const Game = () => {
         gameSettings.scene.worldLayer.setCollisionByProperty({Collides: true});
         gameSettings.scene.physics.add.collider(gameSettings.player.itSelf, gameSettings.scene.worldLayer);
 
-        gameSettings.scene.physics.add.collider(gameSettings.enemies.zombie, gameSettings.scene.worldLayer);
+        gameSettings.scene.physics.add.collider(gameSettings.enemies.zombie.himSelf, gameSettings.scene.worldLayer);
 
         // OverLaps
         gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.scene.overlapLayer);
-        gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.enemies.zombie, attack);
+        gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.enemies.zombie.himSelf, attack);
         gameSettings.scene.overlapLayer.setTileIndexCallback((70+1), killPlayer, gameSettings.scene);
     }
 
@@ -299,7 +324,7 @@ const Game = () => {
 
     function attack(){
         if(gameSettings.player.isJumping){
-            gameSettings.enemies.zombie.destroy();
+            gameSettings.enemies.zombie.himSelf.destroy();
         }else{
             killPlayer();
         }

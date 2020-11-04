@@ -94,6 +94,18 @@
                  "width":64,
                  "x":3072,
                  "y":513.333333333333
+                }, 
+                {
+                 "gid":62,
+                 "height":64,
+                 "id":4,
+                 "name":"zombie1Spawn",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":1798.66666666667,
+                 "y":509.333333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -102,7 +114,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":4,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",
