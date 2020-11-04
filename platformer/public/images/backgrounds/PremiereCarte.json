@@ -106,6 +106,30 @@
                  "width":64,
                  "x":1798.66666666667,
                  "y":509.333333333333
+                }, 
+                {
+                 "gid":62,
+                 "height":64,
+                 "id":9,
+                 "name":"zombie2Spawn",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":2496,
+                 "y":508
+                }, 
+                {
+                 "gid":62,
+                 "height":64,
+                 "id":10,
+                 "name":"zombie3Spawn",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":2820,
+                 "y":702.666666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -114,7 +138,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":5,
+ "nextobjectid":11,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",
