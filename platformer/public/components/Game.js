@@ -93,7 +93,7 @@ const Game = () => {
             speed: 0.5
         }
         controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);*/
-
+console.log(gameSettings.scene.scoreText);
     }
 
     function update(time, delta){
@@ -135,14 +135,27 @@ const Game = () => {
         // Set Borders of the map
         gameSettings.scene.physics.world.setBounds(0,0,gameSettings.scene.tilemap.widthInPixels,gameSettings.scene.tilemap.heigthInPixels);
 
+        // Set spawn
+        gameSettings.scene.spawn = gameSettings.scene.tilemap.findObject("Objects", obj => obj.name === "spawn");
+
+        // Init score
+        gameSettings.scene.score = 0;
+        gameSettings.scene.scoreText = gameSettings.scene.add.text(16, 16, "Score : 0 ", {
+            fontSize: "32px",
+            color : "#FF0000",
+            fontFamily: 'Alex Brush'
+        });
+        gameSettings.scene.scoreText.setScrollFactor(0);
+
         // Set Items
         gameSettings.scene.overlapLayer.setTileIndexCallback((35+1), collectGemme, gameSettings.scene); // id 35 = blueFragment
         gameSettings.scene.overlapLayer.setTileIndexCallback((36+1), collectGemme, gameSettings.scene);
     }
 
     function initPlayer(){
-        gameSettings.player.itSelf = gameSettings.scene.physics.add.sprite(200,200,"player","adventurer_stand");
+        gameSettings.player.itSelf = gameSettings.scene.physics.add.sprite(gameSettings.scene.spawn.x, gameSettings.scene.spawn.y, "player", "adventurer_stand");
         gameSettings.player.itSelf.setCollideWorldBounds(true);
+        gameSettings.player.itSelf.setOrigin(0.5,1);
     }
 
     function generateAnimations(){
@@ -217,6 +230,18 @@ const Game = () => {
 
     function collectGemme(player, tile){
         //console.log(tile.properties);
+
+        // Check which item is
+        if(tile.properties.item === "blueFragment"){
+            gameSettings.scene.score += 5;
+        }else if(tile.properties.item === "yellowFragment"){
+            gameSettings.scene.score += 10;
+        }
+        // Show The Score
+        //console.log(gameSettings.scene.score);
+        gameSettings.scene.scoreText.setText("Score : " + gameSettings.scene.score + " ");
+
+        // Remove the item
         gameSettings.scene.overlapLayer.removeTileAt(tile.x, tile.y).destroy(); // Utilité du destroy() ????
     }
 }
