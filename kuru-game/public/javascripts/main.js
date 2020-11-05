@@ -9,9 +9,13 @@ var jeu = {
 function preload(){
     jeu.scene = this;
 
+    jeu.scene.load.image("terrain","/images/terrain.png");
+    jeu.scene.load.image("tilesPerso","/images/tilesPerso.png");
+    jeu.scene.load.tilemapTiledJSON("map","/json/KuruCarteLevel1.json");
+
 }
 function create(){
-
+    jeu.world.initialiserWorld();
 }
 function update(time, delta){
     ajusterTailleEcran();

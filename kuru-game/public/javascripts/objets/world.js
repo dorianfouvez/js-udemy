@@ -1,8 +1,11 @@
 var world = {
     tilemap : null,
-    tileset : null,
+    tilesetTerrain : null,
+    tilesetItem : null,
     downLayer : null,
+    downLayerItem: null,
     worldLayer : null,
+    worldLayerItem: null,
     topLayer : null,
     overlapLayer : null,
     positionDebut : null,
@@ -12,11 +15,14 @@ var world = {
 
     initialiserWorld : function(){
         this.tilemap = jeu.scene.make.tilemap({key: "map"});
-        this.tileset = this.tilemap.addTilesetImage("tilesheet","tiles");
-        this.downLayer = this.tilemap.createStaticLayer("bot",this.tileset,0,0);
-        this.worldLayer = this.tilemap.createStaticLayer("world",this.tileset,0,0);
-        this.topLayer = this.tilemap.createStaticLayer("top",this.tileset,0,0);
-        this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tileset,0,0);
+        this.tilesetTerrain = this.tilemap.addTilesetImage("terrain","terrain");
+        this.tilesetItem = this.tilemap.addTilesetImage("tilesPerso","tilesPerso");
+        this.downLayer = this.tilemap.createStaticLayer("bot",this.tilesetTerrain,0,0);
+        this.downLayerItem = this.tilemap.createStaticLayer("botItem",this.tilesetItem,0,0);
+        this.worldLayer = this.tilemap.createStaticLayer("world",this.tilesetTerrain,0,0);
+        this.worldLayerItem = this.tilemap.createStaticLayer("worldItem",this.tilesetItem,0,0);
+        this.topLayer = this.tilemap.createStaticLayer("top",this.tilesetTerrain,0,0);
+        this.overlapLayer = this.tilemap.createDynamicLayer("overlap",this.tilesetTerrain,0,0);
 
         this.positionDebut = this.tilemap.findObject("Objects", obj => obj.name === "debut");
         this.positionFin = this.tilemap.findObject("Objects", obj => obj.name === "fin");
