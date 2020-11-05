@@ -148,6 +148,7 @@ const Game = () => {
 
         // Set spawn
         gameSettings.scene.spawn = gameSettings.scene.tilemap.findObject("Objects", obj => obj.name === "spawn");
+        gameSettings.scene.end = gameSettings.scene.tilemap.findObject("Objects", obj => obj.name === "end");
 
         // Init score
         gameSettings.scene.score = 0;
@@ -231,6 +232,8 @@ const Game = () => {
         gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.scene.overlapLayer);
         gameSettings.scene.physics.add.overlap(gameSettings.player.itSelf, gameSettings.enemies.zombie.himSelf, attack);
         gameSettings.scene.overlapLayer.setTileIndexCallback((70+1), killPlayer, gameSettings.scene);
+        gameSettings.scene.overlapLayer.setTileIndexCallback((75+1), levelEnd, gameSettings.scene);
+        gameSettings.scene.overlapLayer.setTileIndexCallback((89+1), levelEnd, gameSettings.scene);
     }
 
     function manageCamera(){
@@ -345,6 +348,25 @@ const Game = () => {
                 color : "#FFFFFF",
                 fontFamily: 'Alex Brush'
             });
+        }
+    }
+
+    function levelEnd(player, tile){
+        if(player.x > gameSettings.scene.end.x - 2 && player.x < gameSettings.scene.end.x +2){
+            if(!gameSettings.scene.gameOver){
+                gameSettings.player.isAlive = false;
+                gameSettings.scene.gameOver = true;
+                gameSettings.scene.add.sprite(gameSettings.scene.cameras.main.midPoint.x, gameSettings.scene.cameras.main.midPoint.y, "panel").setScale(3,1.5);
+                let restartButton = gameSettings.scene.add.sprite(gameSettings.scene.cameras.main.midPoint.x+80, gameSettings.scene.cameras.main.midPoint.y+40, "vBoxButton").setInteractive();
+                restartButton.on("pointerup", function(){
+                    gameSettings.scene.scene.restart();
+                });
+                gameSettings.scene.scoreText = gameSettings.scene.add.text(gameSettings.scene.cameras.main.midPoint.x-110, gameSettings.scene.cameras.main.midPoint.y-50, "Tu as gagné\nTon score est de : " + gameSettings.scene.score + " \nRecommencer ?", {
+                    fontSize: "32px",
+                    color : "#FFFFFF",
+                    fontFamily: 'Alex Brush'
+                });
+            }
         }
     }
 }
